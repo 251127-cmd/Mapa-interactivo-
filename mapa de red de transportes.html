@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mapa Interactivo de la Red de Transporte en México</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  body { margin:0; font-family: Arial; }
+  #map { height:100vh; }
+  .titulo { font-weight:bold; font-size:15px; }
+  .leyenda {
+    background:white;
+    padding:10px;
+    line-height:18px;
+    font-size:13px;
+  }
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+var map = L.map('map').setView([23.6,-102.5],5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ attribution:'© OpenStreetMap'
+}).addTo(map);
+
+//////////////////////////////////////////////////
+// 🔴 TRANSPORTE TERRESTRE
+//////////////////////////////////////////////////
+
+// Carretera Federal 57
+L.polyline([[19.4326,-99.1332],[27.5292,-99.5108]],
+{color:'red', weight:5}).addTo(map)
+.bindPopup("<div class='titulo'>Carretera Federal 57</div><b>Ubicación:</b> CDMX - Piedras Negras<br><b>Mercancía:</b> Automotriz, acero, manufacturas<br><b>Importancia:</b> Principal corredor de exportación al norte<br><b>Conectividad:</b> Centro del país con frontera de EUA");
+
+// Carretera Federal 80
+L.polyline([[22.2330,-97.8612],[20.6760,-103.3440]],
+{color:'red', weight:5}).addTo(map)
+.bindPopup("<div class='titulo'>Carretera Federal 80</div><b>Ubicación:</b> Tampico - Guadalajara<br><b>Mercancía:</b> Industrial y productos regionales<br><b>Importancia:</b> Eje logístico Este-Oeste<br><b>Conectividad:</b> Puertos del Golfo con Occidente");
+
+// Carretera Federal 54
+L.polyline([[19.2430,-103.7240],[25.6866,-100.3161]],
+{color:'red', weight:5}).addTo(map)
+.bindPopup("<div class='titulo'>Carretera Federal 54</div><b>Ubicación:</b> Colima - Monterrey<br><b>Mercancía:</b> Alimentos, manufacturas, carga general<br><b>Importancia:</b> Unión Pacífico - Norte industrial<br><b>Conectividad:</b> Puerto de Manzanillo con zona industrial");
+
+//////////////////////////////////////////////////
+// 🔵 NODO LOGÍSTICO
+//////////////////////////////////////////////////
+
+L.circleMarker([20.6760,-100.3899],{
+ radius:10,
+ color:'blue',
+ fillColor:'blue',
+ fillOpacity:0.8
+}).addTo(map)
+.bindPopup("<div class='titulo'>Nodo Logístico del Bajío (Querétaro)</div><b>Ubicación:</b> Centro del país<br><b>Mercancía predominante:</b> Automotriz, autopartes, alimentos<br><b>Importancia:</b> Centro intermodal estratégico<br><b>Conectividad:</b> Carretera 57 y red ferroviaria");
+
+//////////////////////////////////////////////////
+// ✈️ TRANSPORTE AÉREO
+//////////////////////////////////////////////////
+
+var avionIcon = L.icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61212.png',
+  iconSize: [38,38],
+  iconAnchor: [19,38],
+  popupAnchor: [0,-30]
+});
+
+// AIFA
+L.marker([19.743,-99.016],{icon:avionIcon}).addTo(map)
+.bindPopup("<div class='titulo'>Aeropuerto Internacional Felipe Ángeles</div><b>Volumen estimado:</b> +340,000 toneladas anuales<br><b>Mercancía frecuente:</b> Electrónicos, paquetería, farmacéuticos<br><b>Conectividad:</b> EUA, Asia y red nacional<br><b>Importancia:</b> Nuevo hub estratégico de carga");
+
+// Guadalajara
+L.marker([20.5218,-103.3112],{icon:avionIcon}).addTo(map)
+.bindPopup("<div class='titulo'>Aeropuerto Internacional de Guadalajara</div><b>Volumen estimado:</b> +165,000 toneladas anuales<br><b>Mercancía frecuente:</b> Tecnología, electrónicos, autopartes<br><b>Conectividad:</b> EUA, Europa, Asia<br><b>Importancia:</b> Hub logístico del occidente");
+
+// Monterrey
+L.marker([25.7785,-100.107],{icon:avionIcon}).addTo(map)
+.bindPopup("<div class='titulo'>Aeropuerto Internacional de Monterrey</div><b>Volumen estimado:</b> Alto flujo industrial<br><b>Mercancía frecuente:</b> Manufactura y exportación<br><b>Conectividad:</b> EUA y nacional<br><b>Importancia:</b> Soporte a industria del norte");
+
+//////////////////////////////////////////////////
+// 🟢 TRANSPORTE FERROVIARIO
+//////////////////////////////////////////////////
+
+// Ruta Centro-Norte
+L.polyline([[19.4326,-99.1332],[25.6866,-100.3161]],
+{color:'green', weight:5}).addTo(map)
+.bindPopup("<div class='titulo'>Ruta Ferroviaria Centro-Norte</div><b>Operador:</b> Ferromex<br><b>Mercancía:</b> Granel agrícola, acero, automóviles, contenedores<br><b>Capacidad:</b> Millones de toneladas al año<br><b>Ventaja:</b> Menor costo por tonelada en largas distancias");
+
+// Ruta Noreste
+L.polyline([[25.6866,-100.3161],[27.4779,-99.5496]],
+{color:'green', weight:5}).addTo(map)
+.bindPopup("<div class='titulo'>Ruta Ferroviaria Noreste</div><b>Operador:</b> Ferromex<br><b>Mercancía:</b> Industria pesada y exportación<br><b>Capacidad:</b> Alta carga masiva<br><b>Ventaja:</b> Mayor eficiencia energética vs autotransporte");
+
+//////////////////////////////////////////////////
+// LEYENDA
+//////////////////////////////////////////////////
+
+var legend = L.control({position: "bottomright"});
+legend.onAdd = function () {
+ var div = L.DomUtil.create("div", "leyenda");
+ div.innerHTML += "<b>LEYENDA</b><br>";
+ div.innerHTML += "<span style='color:red;'>▬</span> Carreteras Federales<br>";
+ div.innerHTML += "✈️ Aeropuertos de Carga<br>";
+ div.innerHTML += "<span style='color:green;'>▬</span> Rutas Ferroviarias<br>";
+ div.innerHTML += "<span style='color:blue;'>●</span> Nodo Logístico";
+ return div;
+};
+legend.addTo(map);
+
+</script>
+</body>
+</html>
